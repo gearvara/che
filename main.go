@@ -10,6 +10,7 @@ import (
 	_ "github.com/webteleport/caddy-webteleport"
 	_ "k0s.io/third_party/pkg/module/hub"
 	_ "k0s.io/third_party/pkg/plugin/hello"
+	_ "github.com/gearvara/che/gearvarabot"
 )
 
 func main() {
