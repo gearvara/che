@@ -3,7 +3,10 @@ module github.com/gearvara/che
 go 1.19
 
 require (
+	github.com/btwiuse/pretty v0.2.1
 	github.com/caddyserver/caddy/v2 v2.6.1
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	github.com/rjman-ljm/go-substrate-crypto v1.0.0
 	github.com/webteleport/caddy-gos v0.0.0-20221011065635-5937e8dacd73
 	github.com/webteleport/caddy-wasm v0.0.0
 	github.com/webteleport/caddy-webteleport v0.0.0-20221011064238-7e2f0cd4a773
@@ -21,6 +24,7 @@ require (
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220418222510-f25a4f6275ed // indirect
 	github.com/aryann/difflib v0.0.0-20210328193216-ff5ff6dc229b // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/btcsuite/btcutil v1.0.2 // indirect
 	github.com/caddyserver/certmagic v0.17.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
@@ -37,6 +41,7 @@ require (
 	github.com/ebi-yade/altsvc-go v0.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect

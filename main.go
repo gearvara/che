@@ -5,6 +5,7 @@ import (
 
 	// plug in Caddy modules here
 	_ "github.com/caddyserver/caddy/v2/modules/standard"
+	_ "github.com/gearvara/che/gearvarabot"
 	_ "github.com/webteleport/caddy-gos"
 	_ "github.com/webteleport/caddy-wasm"
 	_ "github.com/webteleport/caddy-webteleport"
