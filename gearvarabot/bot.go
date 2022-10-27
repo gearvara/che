@@ -25,13 +25,14 @@ func validateAddress(address string) bool {
 
 func forwardMessageToChannel(bot *tgbotapi.BotAPI, chatID int64, update tgbotapi.Update) {
 	message := fmt.Sprintf(
-		"@%s (%s %s) is requesting an airdrop:\n\n%s",
+		"@%s (%s %s) is requesting an airdrop to `%s`",
 		update.Message.From.UserName,
 		update.Message.From.FirstName,
 		update.Message.From.LastName,
 		update.Message.Text,
 	)
 	msg := tgbotapi.NewMessage(chatID, message)
+	msg.ParseMode = "markdown"
 	_, err := bot.Send(msg)
 	if err != nil {
 		log.Println(err)
@@ -96,7 +97,7 @@ func Main() {
 			msg.Text = "Your request has been submitted to @GearvaraBotAirdropQueue. It should be approved by @btwiuse shortly. If you didn't receive testnet tokens within 24 hours, please leave a message in @GearvaraBotDiscussion. Thank you!"
 			forwardMessageToChannel(bot, TELEGRAM_CHANNEL_ID, update)
 		default:
-			msg.Text = "Please enter your SS58 address to receive the airdrop, for example: `5GWbaUA3kik9UAzdkymxamcwrwRSwqs7FPzYkZpYTinngVgg`"
+			msg.Text = "Please enter your SS58 address to receive the airdrop, for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`"
 		}
 
 		if _, err := bot.Send(msg); err != nil {
