@@ -90,13 +90,15 @@ func Main() {
 			msg.Text = "Hi :)"
 		case "status":
 			msg.Text = "I'm ok."
+		case "validator":
+			msg.Text = "https://hackmd.io/@gearvara/validator"
 		case "airdrop":
 			log.Println(pretty.YAMLString(update.Message.Text))
 			log.Println(pretty.YAMLString(update.Message.From))
 			msg.Text = "Your request has been submitted to @GearvaraBotAirdropQueue. It should be approved by @btwiuse shortly. If you didn't receive testnet tokens within 24 hours, please leave a message in @GearvaraBotDiscussion. Thank you!"
 			forwardMessageToChannel(bot, TELEGRAM_CHANNEL_ID, update)
 		default:
-			msg.Text = "Please enter your SS58 address to receive the airdrop, for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`"
+			msg.Text = "Please enter your SS58 address to receive the airdrop on [Vara testnet](https://polkadot.js.org/apps/?rpc=wss://vara.gear.rs), for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`\n\nThe testnet tokens are not transferrable, but you can stake them and become a nominator or /validator on Vara testnet."
 		}
 
 		if _, err := bot.Send(msg); err != nil {
