@@ -76,11 +76,10 @@ func Main() {
 				msg.Text = "Thank you for your request. You will be airdropped soon."
 				bot.Send(msg)
 				forwardMessageToChannel(bot, TELEGRAM_CHANNEL_ID, update)
-			} else {
-				msg.Text = fmt.Sprintf("Error: invalid SS58 address: %s", pretty.JSONString(update.Message.Text))
-				bot.Send(msg)
+				continue
 			}
-			continue
+			msg.Text = fmt.Sprintf("Error: invalid SS58 address: %s", pretty.JSONString(update.Message.Text))
+			bot.Send(msg)
 		}
 
 		// Extract the command from the Message.
