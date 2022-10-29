@@ -3,6 +3,7 @@ package gearvarabot
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/btwiuse/pretty"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -39,6 +40,18 @@ func forwardMessageToChannel(bot *tgbotapi.BotAPI, chatID int64, update tgbotapi
 	}
 }
 
+func airdrop(address string) string {
+	cmd := exec.Command("airdrop.ts", address)
+	cmd.Stderr = os.Stderr
+	// get command output
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+		return "An error occured on our side. Please try again later."
+	}
+	return string(output)
+}
+
 func Main() {
 	bot, err := tgbotapi.NewBotAPI(TELEGRAM_BOT_TOKEN)
 	if err != nil {
@@ -73,7 +86,7 @@ func Main() {
 		if !update.Message.IsCommand() { // ignore any non-command Messages
 			log.Println(pretty.JSONString(update))
 			if validateAddress(update.Message.Text) {
-				msg.Text = "Thank you for your request. You will be airdropped soon."
+				msg.Text = airdrop(update.Message.Text)
 				bot.Send(msg)
 				forwardMessageToChannel(bot, TELEGRAM_CHANNEL_ID, update)
 				continue
