@@ -26,14 +26,14 @@ func validateAddress(address string) bool {
 
 func forwardMessageToChannel(bot *tgbotapi.BotAPI, chatID int64, update tgbotapi.Update) {
 	message := fmt.Sprintf(
-		"@%s (%s %s) is requesting an airdrop to `%s`",
+		"@%s (%s %s) is requesting an airdrop to <code>%s</code>",
 		update.Message.From.UserName,
 		update.Message.From.FirstName,
 		update.Message.From.LastName,
 		update.Message.Text,
 	)
 	msg := tgbotapi.NewMessage(chatID, message)
-	msg.ParseMode = "markdown"
+	msg.ParseMode = tgbotapi.ModeHTML
 	_, err := bot.Send(msg)
 	if err != nil {
 		log.Println(err)
@@ -73,7 +73,7 @@ func Main() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 
 		// reply in code format
-		msg.ParseMode = "markdown"
+		msg.ParseMode = tgbotapi.ModeMarkdownV2
 
 		if update.Message.Chat.Type != "private" { // ignore any group chat Message updates
 			continue
