@@ -24,17 +24,15 @@ func validateAddress(address string) bool {
 	return true
 }
 
-func forwardMessageToChannel(bot *tgbotapi.BotAPI, chatID int64, update tgbotapi.Update) {
+func forwardMessageToChannel(chatID int64, update tgbotapi.Update) {
 	message := fmt.Sprintf(
-		"@%s (%s %s) is requesting an airdrop to <code>%s</code>",
+		"@%s (%s %s) is requesting an airdrop to `%s`",
 		update.Message.From.UserName,
 		update.Message.From.FirstName,
 		update.Message.From.LastName,
 		update.Message.Text,
 	)
-	msg := tgbotapi.NewMessage(chatID, message)
-	msg.ParseMode = tgbotapi.ModeHTML
-	_, err := bot.Send(msg)
+	err := sendMarkdown(chatID, message)
 	if err != nil {
 		log.Println(err)
 	}
@@ -52,30 +50,38 @@ func airdrop(address string) string {
 	return string(output)
 }
 
-func Main() {
-	bot, err := tgbotapi.NewBotAPI(TELEGRAM_BOT_TOKEN)
+var (
+	Bot *tgbotapi.BotAPI
+)
+
+func initBot() {
+	var err error
+	Bot, err = tgbotapi.NewBotAPI(TELEGRAM_BOT_TOKEN)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	bot.Debug = true
+	Bot.Debug = true
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	log.Printf("Authorized on account %s", Bot.Self.UserName)
+}
+
+func Main() {
+	initBot()
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates := bot.GetUpdatesChan(u)
+	updates := Bot.GetUpdatesChan(u)
 
 	for update := range updates {
 		// Create a new MessageConfig. We don't have text yet,
 		// so we leave it empty.
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+		chatID := update.Message.Chat.ID
+		chatType := update.Message.Chat.Type
+		reply := ""
 
-		// reply in code format
-		msg.ParseMode = tgbotapi.ModeMarkdownV2
-
-		if update.Message.Chat.Type != "private" { // ignore any group chat Message updates
+		if chatType != "private" { // ignore any group chat Message updates
 			continue
 		}
 
@@ -86,37 +92,50 @@ func Main() {
 		if !update.Message.IsCommand() { // ignore any non-command Messages
 			log.Println(pretty.JSONString(update))
 			if validateAddress(update.Message.Text) {
-				msg.Text = airdrop(update.Message.Text)
-				bot.Send(msg)
-				forwardMessageToChannel(bot, TELEGRAM_CHANNEL_ID, update)
+				reply = airdrop(update.Message.Text)
+				err := sendMarkdown(chatID, reply)
+				if err != nil {
+					log.Println(err)
+				}
+				forwardMessageToChannel(TELEGRAM_CHANNEL_ID, update)
 				continue
 			}
-			msg.Text = fmt.Sprintf("Error: invalid SS58 address: %s", pretty.JSONString(update.Message.Text))
-			bot.Send(msg)
+			reply = fmt.Sprintf("Error: invalid SS58 address: %s", pretty.JSONString(update.Message.Text))
+			err := sendMarkdown(chatID, reply)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 
 		// Extract the command from the Message.
 		switch update.Message.Command() {
 		case "help":
-			msg.Text = "I understand /airdrop /sayhi and /status."
+			reply = "I understand /airdrop /sayhi and /status."
 		case "sayhi":
-			msg.Text = "Hi :)"
+			reply = "Hi :)"
 		case "status":
-			msg.Text = "I'm ok."
+			reply = "I'm ok."
 		case "validator":
-			msg.Text = "https://hackmd.io/@gearvara/validator"
+			reply = "https://hackmd.io/@gearvara/validator"
 		case "airdrop":
 			log.Println(pretty.YAMLString(update.Message.Text))
 			log.Println(pretty.YAMLString(update.Message.From))
-			msg.Text = "Your request has been submitted to @GearvaraBotAirdropQueue. It should be approved by @btwiuse shortly. If you didn't receive testnet tokens within 24 hours, please leave a message in @GearvaraBotDiscussion. Thank you!"
-			forwardMessageToChannel(bot, TELEGRAM_CHANNEL_ID, update)
+			reply = "TODO: unimplemented"
 		default:
-			msg.Text = "Please enter your SS58 address to receive the airdrop on [Vara testnet](https://polkadot.js.org/apps/?rpc=wss://vara.gear.rs), for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`\n\nThe testnet tokens are not transferrable, but you can stake them and become a nominator or /validator on Vara testnet."
+			reply = "Please enter your SS58 address to receive the airdrop on [Vara testnet](https://polkadot.js.org/apps/?rpc=wss://vara.gear.rs), for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`\n\nThe testnet tokens are not transferrable, but you can stake them and become a nominator or /validator on Vara testnet."
 		}
 
-		msg.Text = tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, msg.Text)
-		if _, err := bot.Send(msg); err != nil {
-			log.Panic(err)
+		err := sendMarkdown(chatID, reply)
+		if err != nil {
+			log.Println(err)
 		}
 	}
+}
+
+func sendMarkdown(chatID int64, text string) error {
+	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ParseMode = tgbotapi.ModeMarkdownV2
+	msg.Text = tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, msg.Text)
+	_, err := Bot.Send(msg)
+	return err
 }
