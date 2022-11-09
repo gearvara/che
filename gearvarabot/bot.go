@@ -122,7 +122,7 @@ func Main() {
 			log.Println(pretty.YAMLString(update.Message.From))
 			reply = "TODO: unimplemented"
 		default:
-			reply = "Please enter your SS58 address to receive the airdrop on [Vara testnet](https://polkadot.js.org/apps/?rpc=wss://vara.gear.rs), for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`\n\nThe testnet tokens are not transferrable, but you can stake them and become a nominator or /validator on Vara testnet."
+			reply = "Please enter your SS58 address to receive the airdrop on [Vara testnet](https://polkadot.js.org/apps/?rpc=wss://rpc.vara-network.io), for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`\n\nThe testnet tokens are not transferrable, but you can stake them and become a nominator or /validator on Vara testnet."
 		}
 
 		err := sendMarkdown(chatID, reply)
