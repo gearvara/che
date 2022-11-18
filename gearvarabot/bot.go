@@ -7,21 +7,14 @@ import (
 
 	"github.com/btwiuse/pretty"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/rjman-ljm/go-substrate-crypto/ss58"
 )
 
 var TELEGRAM_BOT_TOKEN = os.Getenv("TELEGRAM_BOT_TOKEN")
 var TELEGRAM_CHANNEL_ID int64 = -1001849103490
 
-// validate ss58 address
-func validateAddress(address string) bool {
-	pub, err := ss58.DecodeToPub(address)
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	log.Println(pretty.YAMLString(pub))
-	return true
+func validateAddress(address string) string {
+	cmd := exec.Command("validateAddress.ts", address)
+	return cmd.Run() == nil
 }
 
 func forwardMessageToChannel(chatID int64, update tgbotapi.Update) {
@@ -122,7 +115,7 @@ func Main() {
 			log.Println(pretty.YAMLString(update.Message.From))
 			reply = "TODO: unimplemented"
 		default:
-			reply = "Please enter your SS58 address to receive the airdrop on [Vara testnet](https://polkadot.js.org/apps/?rpc=wss://rpc.vara-network.io), for example: `5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i`\n\nThe testnet tokens are not transferrable, but you can stake them and become a nominator or /validator on Vara testnet."
+			reply = "Please enter your SS58 address to receive the airdrop on [Vara testnet](https://polkadot.js.org/apps/?rpc=wss://rpc.vara-network.io), for example: `kGgMdVTkSJznWm6HnGu1tAd4Q13899oLVyKz2UUjiJye1MWru`\n\nThe testnet tokens are not transferrable, but you can stake them and become a nominator or /validator on Vara testnet."
 		}
 
 		err := sendMarkdown(chatID, reply)
