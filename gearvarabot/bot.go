@@ -12,7 +12,7 @@ import (
 var TELEGRAM_BOT_TOKEN = os.Getenv("TELEGRAM_BOT_TOKEN")
 var TELEGRAM_CHANNEL_ID int64 = -1001849103490
 
-func validateAddress(address string) string {
+func validateAddress(address string) bool {
 	cmd := exec.Command("validateAddress.ts", address)
 	return cmd.Run() == nil
 }
